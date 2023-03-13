@@ -23,6 +23,11 @@ router.post('/', async (req, res) => {
 //Ruta /carts/:cid
 //GET: Obtener carrito por id.
 
+router.get('/', async (req, res) => {
+  const carts = await cartsManager.getCarts();
+  res.json(carts);
+});
+
 router.get('/:cid', async (req, res) => {
   const { cid } = req.params;
   const cart = await cartsManager.getCartById(cid);
@@ -42,6 +47,16 @@ router.post('/:cid/product/:pid', async (req, res) => {
     return;
   }
   res.json({ msg: `El producto con el id ${pid} no existe.` });
+});
+
+router.delete('/:cid', async (req, res) => {
+  const { cid } = req.params;
+  const deletedCart = await cartsManager.deleteCartById(cid);
+  if (deletedCart) {
+    res.json({ msg: `El carrito con el id ${cid} ha sido eliminado.` });
+  } else {
+    res.status(404).json({ msg: `El carrito con el id ${cid} no existe.` });
+  }
 });
 
 export default router;

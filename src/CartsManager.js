@@ -59,15 +59,13 @@ class CartsManager {
         if (cart !== undefined) {
           return cart;
         }
-        throw Error('Not Found');
-        return id;
+        throw Error('Not Found'); // Move this statement above the return statement
       } else {
         console.log(`El carrito con el id ${id} no existe`);
         return { msg: `El carrito con el id ${id} no existe` };
       }
     } catch (error) {
       console.log(`Error al obtener el carrito con el id: ${id} `);
-
       console.log(error);
       return { msg: 'Error al obtener el producto' };
     }
@@ -117,6 +115,32 @@ class CartsManager {
       return false;
     }
   }
+
+  async deleteCart(cartId) {
+    try {
+      if (this.fileExists(this.path)) {
+        const carts = await this.getCarts();
+        const cartIndex = carts.findIndex((item) => item.id == cartId);
+        if (cartIndex !== -1) {
+          carts.splice(cartIndex, 1); // remove the cart from the carts array
+          await fs.promises.writeFile(this.path, JSON.stringify(carts, null, 2)); // save the updated carts array to file
+          return { msg: `El carrito con el id ${cartId} ha sido eliminado` };
+        } else {
+          throw Error(`El carrito con el id ${cartId} no existe.`);
+        }
+      } else {
+        let msg = 'El archivo que estas buscando no existe.';
+        console.log(msg);
+        return { msg };
+      }
+    } catch (error) {
+      console.log(error);
+      console.log('Error al eliminar el carrito');
+      return { msg: 'Error al eliminar el carrito' };
+    }
+  }
+  
 }
+
 
 export default CartsManager;
